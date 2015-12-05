@@ -42,6 +42,9 @@ class GUI_EXPORT QgsMapToolCapture : public QgsMapToolAdvancedDigitizing
     //! destructor
     virtual ~QgsMapToolCapture();
 
+    //! activate the tool
+    virtual void activate() override;
+
     //! deactive the tool
     virtual void deactivate() override;
 
@@ -53,7 +56,7 @@ class GUI_EXPORT QgsMapToolCapture : public QgsMapToolAdvancedDigitizing
      *
      * @return Capture curve
      */
-    const QgsCompoundCurveV2* captureCurve() const { return &mCaptureCurve; }
+    const QgsCompoundCurveV2* captureCurve() const;
 
 
     /**
@@ -81,6 +84,7 @@ class GUI_EXPORT QgsMapToolCapture : public QgsMapToolAdvancedDigitizing
   private slots:
     void validationFinished();
     void currentLayerChanged( QgsMapLayer *layer );
+    void editingStopped();
     void addError( QgsGeometry::Error );
 
 
@@ -96,21 +100,22 @@ class GUI_EXPORT QgsMapToolCapture : public QgsMapToolAdvancedDigitizing
     void undo();
 
     /**
-     * Start capturing
+     * Starts capturing on the current layer. Does nothing if the capturing is already started.
      */
     void startCapturing();
 
     /**
      * Are we currently capturing?
      *
-     * @return Is the tool in capture mode?
+     * @return Is capturing for the current layer active?
      */
     bool isCapturing() const;
 
     /**
-     * Stop capturing
+     * Stops the capturing. Does nothing if capturing on the given layer is not started.
+     * @param vlayer layer to stop the capturing for, defaults to the current layer.
      */
-    void stopCapturing();
+    void stopCapturing( QgsVectorLayer * vlayer = 0 );
 
     /**
      * Number of points digitized
@@ -138,27 +143,34 @@ class GUI_EXPORT QgsMapToolCapture : public QgsMapToolAdvancedDigitizing
     void closePolygon();
 
   private:
-    /** Flag to indicate a map canvas capture operation is taking place */
-    bool mCapturing;
 
-    /** Rubber band for polylines and polygons */
-    QgsRubberBand* mRubberBand;
+    struct settingPerLayer
+    {
+      /** Rubber band for polylines and polygons */
+      QgsRubberBand* mRubberBand;
+      /** Temporary rubber band for polylines and polygons. this connects the last added point to the mouse cursor position */
+      QgsRubberBand* mTempRubberBand;
+      /** List to store the points of digitised lines and polygons (in layer coordinates)*/
+      QgsCompoundCurveV2* mCaptureCurve;
+      QStringList mValidationWarnings;
+      QgsGeometryValidator *mValidator;
 
-    /** Temporary rubber band for polylines and polygons. this connects the last added point to the mouse cursor position */
-    QgsRubberBand* mTempRubberBand;
+      QList< QgsGeometry::Error > mGeomErrors;
+      QList< QgsVertexMarker * > mGeomErrorMarkers;
+    };
+    /** State of the tool, saved per layer */
+    QHash<QgsVectorLayer*, settingPerLayer*> settingsByLayer;
 
-    /** List to store the points of digitised lines and polygons (in layer coordinates)*/
-    QgsCompoundCurveV2 mCaptureCurve;
+    /** Return current settings */
+    settingPerLayer* currentSettings() const;
 
     void validateGeometry();
-    QStringList mValidationWarnings;
-    QgsGeometryValidator *mValidator;
-    QList< QgsGeometry::Error > mGeomErrors;
-    QList< QgsVertexMarker * > mGeomErrorMarkers;
 
     bool mCaptureModeFromLayer;
 
     QgsVertexMarker* mSnappingMarker;
+
+    QgsVectorLayer * mCapturingLayer;
 
 #ifdef Q_OS_WIN
     int mSkipNextContextMenuEvent;

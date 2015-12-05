@@ -83,8 +83,6 @@ void QgsMapToolSplitFeatures::cadCanvasReleaseEvent( QgsMapMouseEvent * e )
         QgisApp::instance()->messageTimeout() );
       return;
     }
-
-    startCapturing();
   }
   else if ( e->button() == Qt::RightButton )
   {

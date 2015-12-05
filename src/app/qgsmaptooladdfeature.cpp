@@ -185,8 +185,6 @@ void QgsMapToolAddFeature::cadCanvasReleaseEvent( QgsMapMouseEvent* e )
         emit messageEmitted( tr( "Cannot transform the point to the layers coordinate system" ), QgsMessageBar::WARNING );
         return;
       }
-
-      startCapturing();
     }
     else if ( e->button() == Qt::RightButton )
     {
