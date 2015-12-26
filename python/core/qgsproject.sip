@@ -25,6 +25,16 @@ class QgsProject : QObject
 
   public:
 
+    //! data for a layer embedded from another project
+    struct QgsEmbeddedLayerData
+    {
+      QgsEmbeddedLayerData( const QString& extProjectFile = "", const QString& extLayerId = "", const bool saveLayer = true );
+      QString extProjectFile; //!< path to the project file
+      QString extLayerId;     //!< layerId within the external project
+      bool saveLayer;         /*!< save layer yes / no (e.g. if the layer is part of an embedded group, loading/saving is done by the legend)
+                                   If the project file path is empty, QgsProject is going to ignore the layer for saving (e.g. because it is part and managed by an embedded group) */
+    };
+
     /**
        @todo XXX Should have semantics for saving project if dirty as last gasp?
     */

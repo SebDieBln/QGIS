@@ -1059,9 +1059,7 @@ bool QgsProject::write()
 
     if ( ml )
     {
-      QString externalProjectFile = layerIsEmbedded( ml->id() );
-      QHash< QString, QPair< QString, bool> >::const_iterator emIt = mEmbeddedLayers.constFind( ml->id() );
-      if ( emIt == mEmbeddedLayers.constEnd() )
+      if ( !mEmbeddedLayers.contains( ml->id() ) )
       {
         // general layer metadata
         QDomElement maplayerElem = doc->createElement( "maplayer" );
@@ -1076,11 +1074,11 @@ bool QgsProject::write()
       {
         // layer defined in an external project file
         // only save embedded layer if not managed by a legend group
-        if ( emIt.value().second )
+        if ( mEmbeddedLayers.value( ml->id() ).saveLayer )
         {
           QDomElement mapLayerElem = doc->createElement( "maplayer" );
           mapLayerElem.setAttribute( "embedded", 1 );
-          mapLayerElem.setAttribute( "project", writePath( emIt.value().first ) );
+          mapLayerElem.setAttribute( "project", writePath( mEmbeddedLayers.value( ml->id() ).extProjectFile ) );
           mapLayerElem.setAttribute( "id", ml->id() );
           projectLayersNode.appendChild( mapLayerElem );
         }
@@ -1653,12 +1651,10 @@ void QgsProject::setBadLayerHandler( QgsProjectBadLayerHandler *handler )
 
 QString QgsProject::layerIsEmbedded( const QString &id ) const
 {
-  QHash< QString, QPair< QString, bool > >::const_iterator it = mEmbeddedLayers.find( id );
-  if ( it == mEmbeddedLayers.constEnd() )
-  {
+  if ( mEmbeddedLayers.contains( id ) )
+    return mEmbeddedLayers.value( id ).extProjectFile;
+  else
     return QString();
-  }
-  return it.value().first;
 }
 
 bool QgsProject::createEmbeddedLayer( const QString &layerId, const QString &projectFilePath, QList<QDomNode> &brokenNodes,
@@ -1724,7 +1720,7 @@ bool QgsProject::createEmbeddedLayer( const QString &layerId, const QString &pro
         return false;
       }
 
-      mEmbeddedLayers.insert( layerId, qMakePair( projectFilePath, saveFlag ) );
+      mEmbeddedLayers.insert( layerId, QgsEmbeddedLayerData( projectFilePath, layerId, saveFlag ) );
 
       // change datasource path from relative to absolute if necessary
       // see also QgsMapLayer::readLayerXML
