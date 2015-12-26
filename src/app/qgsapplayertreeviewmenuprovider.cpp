@@ -197,7 +197,7 @@ QMenu* QgsAppLayerTreeViewMenuProvider::createContextMenu()
 
       addCustomLayerActions( menu, layer );
 
-      if ( layer && QgsProject::instance()->layerIsEmbedded( layer->id() ).isEmpty() )
+      if ( layer && !QgsProject::instance()->isLayerEmbedded( layer->id() ) )
         menu->addAction( tr( "&Properties" ), QgisApp::instance(), SLOT( layerProperties() ) );
 
       if ( node->parent() != mView->layerTreeModel()->rootGroup() )

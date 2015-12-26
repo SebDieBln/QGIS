@@ -272,8 +272,15 @@ class CORE_EXPORT QgsProject : public QObject
       Deletes old handler and takes ownership of the new one. */
     void setBadLayerHandler( QgsProjectBadLayerHandler* handler );
 
-    /** Returns project file path if layer is embedded from other project file. Returns empty string if layer is not embedded*/
-    QString layerIsEmbedded( const QString& id ) const;
+    /** Returns project file path if layer is embedded from other project file. Returns empty string if layer is not embedded
+      @deprecated Use isLayerEmbedded and embeddedLayerData instead */
+    Q_DECL_DEPRECATED QString layerIsEmbedded( const QString& id ) const;
+
+    /** Checks whether the layer given by \p layerId is embedded from another project file. */
+    bool isLayerEmbedded( const QString& layerId ) const;
+
+    /** Returns data about an embedded layer. */
+    QgsEmbeddedLayerData embeddedLayerData( const QString& layerId ) const;
 
     /** Creates a maplayer instance defined in an arbitrary project file. Caller takes ownership
       @return the layer or 0 in case of error

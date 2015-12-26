@@ -9639,7 +9639,7 @@ void QgisApp::activateDeactivateLayerRelatedActions( QgsMapLayer* layer )
     return;
   }
 
-  mActionLayerProperties->setEnabled( QgsProject::instance()->layerIsEmbedded( layer->id() ).isEmpty() );
+  mActionLayerProperties->setEnabled( !QgsProject::instance()->isLayerEmbedded( layer->id() ) );
   mActionAddToOverview->setEnabled( true );
   mActionZoomToLayer->setEnabled( true );
 
@@ -10470,7 +10470,7 @@ void QgisApp::showLayerProperties( QgsMapLayer *ml )
   if ( !ml )
     return;
 
-  if ( !QgsProject::instance()->layerIsEmbedded( ml->id() ).isEmpty() )
+  if ( QgsProject::instance()->isLayerEmbedded( ml->id() ) )
   {
     return; //don't show properties of embedded layers
   }

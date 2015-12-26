@@ -991,7 +991,7 @@ void QgsIdentifyResultsDialog::contextMenuEvent( QContextMenuEvent* event )
   mActionPopup->addAction( tr( "Clear highlights" ), this, SLOT( clearHighlights() ) );
   mActionPopup->addAction( tr( "Highlight all" ), this, SLOT( highlightAll() ) );
   mActionPopup->addAction( tr( "Highlight layer" ), this, SLOT( highlightLayer() ) );
-  if ( layer && QgsProject::instance()->layerIsEmbedded( layer->id() ).isEmpty() )
+  if ( layer && !QgsProject::instance()->isLayerEmbedded( layer->id() ) )
   {
     mActionPopup->addAction( tr( "Activate layer" ), this, SLOT( activateLayer() ) );
     mActionPopup->addAction( tr( "Layer properties..." ), this, SLOT( layerProperties() ) );

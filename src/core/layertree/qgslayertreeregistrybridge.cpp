@@ -58,7 +58,7 @@ void QgsLayerTreeRegistryBridge::layersAdded( const QList<QgsMapLayer*>& layers 
     nodes << nodeLayer;
 
     // check whether the layer is marked as embedded
-    QString projectFile = QgsProject::instance()->layerIsEmbedded( nodeLayer->layerId() );
+    QString projectFile = QgsProject::instance()->embeddedLayerData( nodeLayer->layerId() ).extProjectFile;
     if ( !projectFile.isEmpty() )
     {
       nodeLayer->setCustomProperty( "embedded", 1 );
