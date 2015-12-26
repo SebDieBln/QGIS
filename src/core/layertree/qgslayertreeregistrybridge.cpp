@@ -58,11 +58,12 @@ void QgsLayerTreeRegistryBridge::layersAdded( const QList<QgsMapLayer*>& layers 
     nodes << nodeLayer;
 
     // check whether the layer is marked as embedded
-    QString projectFile = QgsProject::instance()->embeddedLayerData( nodeLayer->layerId() ).extProjectFile;
-    if ( !projectFile.isEmpty() )
+    if ( QgsProject::instance()->isLayerEmbedded( nodeLayer->layerId() ) )
     {
+      QgsProject::QgsEmbeddedLayerData embLayerData = QgsProject::instance()->embeddedLayerData( nodeLayer->layerId() );
       nodeLayer->setCustomProperty( "embedded", 1 );
-      nodeLayer->setCustomProperty( "embedded_project", projectFile );
+      nodeLayer->setCustomProperty( "embedded_project", embLayerData.extProjectFile );
+      nodeLayer->setCustomProperty( "embedded_id", embLayerData.extLayerId );
     }
   }
 

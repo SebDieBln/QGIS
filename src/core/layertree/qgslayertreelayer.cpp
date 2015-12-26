@@ -114,6 +114,10 @@ QgsLayerTreeLayer* QgsLayerTreeLayer::readXML( QDomElement& element )
 
   nodeLayer->readCommonXML( element );
 
+  // Add the custom property "embedded_id" if it is missing. This will be the case for projects saved in older versions of QGIS.
+  if ( nodeLayer->customProperties().contains( "embedded_project" ) && !nodeLayer->customProperties().contains( "embedded_id" ) )
+    nodeLayer->setCustomProperty( "embedded_id", layerID );
+
   nodeLayer->setVisible( checked );
   nodeLayer->setExpanded( isExpanded );
   return nodeLayer;
