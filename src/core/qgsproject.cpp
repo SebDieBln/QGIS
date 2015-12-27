@@ -1079,6 +1079,7 @@ bool QgsProject::write()
           QDomElement mapLayerElem = doc->createElement( "maplayer" );
           mapLayerElem.setAttribute( "embedded", 1 );
           mapLayerElem.setAttribute( "project", writePath( mEmbeddedLayers.value( ml->id() ).extProjectFile ) );
+          mapLayerElem.setAttribute( "embedded_id", mEmbeddedLayers.value( ml->id() ).extLayerId );
           mapLayerElem.setAttribute( "id", ml->id() );
           projectLayersNode.appendChild( mapLayerElem );
         }
