@@ -48,6 +48,26 @@
 #include "qgsvectorlayer.h"
 
 
+QString QgsMapLayer::generateLayerID( const QString& layerName )
+{
+  static int counter = 0;
+  counter++;
+  QString newLayerID;
+
+  // Generate a new unique ID for a layer
+  QDateTime dt = QDateTime::currentDateTime();
+  newLayerID = layerName + "_" + dt.toString( "yyyyMMddhhmmsszzz" ) + QString::number( counter );
+  // Tidy the ID up to avoid characters that may cause problems
+  // elsewhere (e.g in some parts of XML). Replaces every non-word
+  // character (word characters are the alphabet, numbers and
+  // underscore) with an underscore.
+  // Note that the first backslashe in the regular expression is
+  // there for the compiler, so the pattern is actually \W
+  newLayerID.replace( QRegExp( "[\\W]" ), "_" );
+
+  return newLayerID;
+}
+
 QgsMapLayer::QgsMapLayer( QgsMapLayer::LayerType type,
                           const QString& lyrname,
                           const QString& source )
@@ -71,15 +91,7 @@ QgsMapLayer::QgsMapLayer( QgsMapLayer::LayerType type,
   mShortName = lyrname;
 
   // Generate the unique ID of this layer
-  QDateTime dt = QDateTime::currentDateTime();
-  mID = lyrname + dt.toString( "yyyyMMddhhmmsszzz" );
-  // Tidy the ID up to avoid characters that may cause problems
-  // elsewhere (e.g in some parts of XML). Replaces every non-word
-  // character (word characters are the alphabet, numbers and
-  // underscore) with an underscore.
-  // Note that the first backslashe in the regular expression is
-  // there for the compiler, so the pattern is actually \W
-  mID.replace( QRegExp( "[\\W]" ), "_" );
+  mID = generateLayerID( lyrname );
 
   //set some generous  defaults for scale based visibility
   mMinScale = 0;

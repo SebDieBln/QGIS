@@ -59,6 +59,11 @@ class CORE_EXPORT QgsMapLayer : public QObject
       PluginLayer
     };
 
+    /** Generate a new layer ID using the given \p layerName
+     * @param layerName Display Name of the layer to generate the ID for
+     */
+    static QString generateLayerID( const QString& layerName );
+
     /** Constructor
      * @param type Type of layer as defined in QgsMapLayer::LayerType enum
      * @param lyrname Display Name of the layer

@@ -46,10 +46,9 @@ bool QgsLayerDefinition::loadLayerDefinition( QDomDocument doc, QgsLayerTreeGrou
     QDomNode idnode = ids.at( i );
     QDomElement idElem = idnode.toElement();
     QString oldid = idElem.text();
-    // Strip the date part because we will replace it.
-    QString layername = oldid.left( oldid.length() - 17 );
-    QDateTime dt = QDateTime::currentDateTime();
-    QString newid = layername + dt.toString( "yyyyMMddhhmmsszzz" ) + QString::number( qrand() );
+    // Try to calculate the layer name from the old id. There is no problem if this is not correct.
+    QString layerName = oldid.left( oldid.lastIndexOf( "_" ) );
+    QString newid = QgsMapLayer::generateLayerID( layerName );
     idElem.firstChild().setNodeValue( newid );
     QDomNodeList treeLayerNodes = doc.elementsByTagName( "layer-tree-layer" );
 
